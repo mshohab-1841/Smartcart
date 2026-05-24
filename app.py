@@ -1294,6 +1294,8 @@ def user_product_details(product_id):
         return redirect('/user/products')
 
     return render_template("user/product_details.html", product=product)
+
+
 # Run the Flask app
 # -------------------------------
 if __name__ == '__main__':
