@@ -6,7 +6,7 @@
 from flask import Flask, render_template, request, redirect, session, flash,make_response
 import mysql.connector
 from flask_mail import Mail, Message
-import os
+import config  # import settings from config.py
 import bcrypt
 import random
 import os
@@ -17,32 +17,32 @@ from utils.pdf_generator import generate_pdf
 
 app = Flask(__name__)
 razorpay_client = razorpay.Client(
-    auth=(os.environ.get('RAZORPAY_KEY_ID'), os.environ.get('RAZORPAY_KEY_SECRET'))
+    auth=(config.RAZORPAY_KEY_ID, config.RAZORPAY_KEY_SECRET)
 )
 
-app.secret_key = os.environ.get('SECRET_KEY')
+app.secret_key = config.SECRET_KEY
 
 # ---------------- EMAIL CONFIGURATION ----------------
-app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
-app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_SERVER'] = config.MAIL_SERVER
+app.config['MAIL_PORT'] = config.MAIL_PORT
+app.config['MAIL_USE_TLS'] = config.MAIL_USE_TLS
+app.config['MAIL_USERNAME'] = config.MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = config.MAIL_PASSWORD
 
 mail = Mail(app)
 
 def get_db_connection():
     return mysql.connector.connect(
-        host=os.environ.get('DB_HOST'),
-        user=os.environ.get('DB_USER'),
-        password=os.environ.get('DB_PASSWORD'),
-        database=os.environ.get('DB_NAME')
+        host=config.DB_HOST,
+        user=config.DB_USER,
+        password=config.DB_PASSWORD,
+        database=config.DB_NAME
     )
 
 
 
 # Set secret key for session management
-app.secret_key = os.environ.get('SECRET_KEY')
+app.secret_key = config.SECRET_KEY
 
 # -------------------------------
 # MySQL Database Connection Setup
@@ -55,10 +55,10 @@ def get_db_connection():
     we need to interact with the DB.
     """
     conn = mysql.connector.connect(
-        host=os.environ.get('DB_HOST'),
-        user=os.environ.get('DB_USER'),
-        password=os.environ.get('DB_PASSWORD'),
-        database=os.environ.get('DB_NAME')
+        host=config.DB_HOST,
+        user=config.DB_USER,
+        password=config.DB_PASSWORD,
+        database=config.DB_NAME
     )
     return conn
 
@@ -107,7 +107,7 @@ def admin_signup():
     # 4️⃣ Send OTP Email
     message = Message(
         subject="SmartCart Admin OTP",
-        sender=os.environ.get('MAIL_USERNAME'),
+        sender=config.MAIL_USERNAME,
         recipients=[email]
     )
     message.body = f"Your OTP for SmartCart Admin Registration is: {otp}"
@@ -1051,12 +1051,12 @@ def user_pay():
     return render_template(
         "user/payment.html",
         amount=total_amount,
-        key_id=os.environ.get('RAZORPAY_KEY_ID'),
+        key_id=config.RAZORPAY_KEY_ID,
         order_id=razorpay_order['id']
     )
 
 # Ensure razorpay_client is initialized (from Day 12)
-# razorpay_client = razorpay.Client(auth=(os.environ.get('RAZORPAY_KEY_ID'), os.environ.get('RAZORPAY_KEY_SECRET')))
+# razorpay_client = razorpay.Client(auth=(config.RAZORPAY_KEY_ID, config.RAZORPAY_KEY_SECRET))
 
 # ------------------------------
 # Route: Verify Payment and Store Order
@@ -1237,40 +1237,40 @@ def download_invoice(order_id):
 @app.route('/user/products')
 def user_products():
 
-    # Optional: restrict only logged-in users
-    if 'user_id' not in session:
-        flash("Please login to view products!", "danger")
-        return redirect('/')
+            # Optional: restrict only logged-in users
+            if 'user_id' not in session:
+                flash("Please login to view products!", "danger")
+                return redirect('/')
 
-    search = request.args.get('search', '')
-    category_filter = request.args.get('category', '')
+            search = request.args.get('search', '')
+            category_filter = request.args.get('category', '')
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
 
-    # Fetch categories for filter dropdown
-    cursor.execute("SELECT DISTINCT category FROM products")
-    categories = cursor.fetchall()
+            # Fetch categories for filter dropdown
+            cursor.execute("SELECT DISTINCT category FROM products")
+            categories = cursor.fetchall()
 
-    # Build dynamic SQL
-    query = "SELECT * FROM products WHERE 1=1"
-    params = []
+            # Build dynamic SQL
+            query = "SELECT * FROM products WHERE 1=1"
+            params = []
 
-    if search:
-        query += " AND name LIKE %s"
-        params.append("%" + search + "%")
+            if search:
+                query += " AND name LIKE %s"
+                params.append("%" + search + "%")
 
-    if category_filter:
-        query += " AND category = %s"
-        params.append(category_filter)
+            if category_filter:
+                query += " AND category = %s"
+                params.append(category_filter)
 
-    cursor.execute(query, params)
-    products = cursor.fetchall()
+            cursor.execute(query, params)
+            products = cursor.fetchall()
 
-    cursor.close()
-    conn.close()
+            cursor.close()
+            conn.close()
 
-    return render_template("user/user_products.html",products=products,categories=categories)
+            return render_template("user/user_products.html",products=products,categories=categories)
 
 # ROUTE: USER PRODUCT DETAILS PAGE
 # =================================================================
