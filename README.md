@@ -1,5 +1,6 @@
 # Smartcart 🛒
-
+## 🌐 Live Demo
+[View Smartcart Live](https://smartcart-us4w.vercel.app)
 A smart shopping cart web application built with Flask.
 
 ## Features
