@@ -1,0 +1,92 @@
+{% extends "admin/base.html" %}
+
+{% block title %}All Orders — SmartCart Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">🧾 All Customer Orders</h2>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card border-0 shadow-sm" style="border-radius:12px; overflow:hidden;">
+        <table class="table table-hover align-middle mb-0">
+            <thead style="background-color:#1a1a2e; color:white;">
+                <tr>
+                    <th class="py-3 px-3">Order ID</th>
+                    <th class="py-3 px-3">User</th>
+                    <th class="py-3 px-3">Amount</th>
+                    <th class="py-3 px-3">Payment</th>
+                    <th class="py-3 px-3">Status</th>
+                    <th class="py-3 px-3">Date</th>
+                    <th class="py-3 px-3 text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td class="px-3 text-muted" style="font-size:13px;">#{{ order.order_id }}</td>
+
+                    <td class="px-3 fw-semibold">{{ order.username }}</td>
+
+                    <td class="px-3 fw-bold">₹{{ order.amount }}</td>
+
+                    <td class="px-3">
+                        {% if order.payment_status == 'paid' %}
+                            <span class="badge rounded-pill px-3 py-1"
+                                  style="background-color:#eafaf1; color:#1e8449; font-size:12px;">
+                                ✅ Paid
+                            </span>
+                        {% else %}
+                            <span class="badge rounded-pill px-3 py-1"
+                                  style="background-color:#fdecea; color:#c0392b; font-size:12px;">
+                                ❌ Unpaid
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-3">
+                        {% if order.order_status == 'delivered' %}
+                            <span class="badge rounded-pill px-3 py-1"
+                                  style="background-color:#eafaf1; color:#1e8449; font-size:12px;">
+                                Delivered
+                            </span>
+                        {% elif order.order_status == 'processing' %}
+                            <span class="badge rounded-pill px-3 py-1"
+                                  style="background-color:#fff8e1; color:#f57f17; font-size:12px;">
+                                Processing
+                            </span>
+                        {% else %}
+                            <span class="badge rounded-pill px-3 py-1"
+                                  style="background-color:#e8eaf6; color:#1a1a2e; font-size:12px;">
+                                {{ order.order_status }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-3 text-muted" style="font-size:13px;">{{ order.created_at }}</td>
+
+                    <td class="px-3 text-center">
+                        <a href="/admin/order/{{ order.order_id }}"
+                           class="btn btn-sm px-3"
+                           style="background-color:#e8eaf6; color:#1a1a2e; border-radius:6px; font-size:13px;">
+                            👁 View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if not orders %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No orders found.</td>
+                </tr>
+                {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

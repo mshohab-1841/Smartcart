@@ -1,0 +1,23 @@
+{% extends "user/base.html" %}
+
+{% block title %}Page Title — SmartCart{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* page-specific CSS here */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- YOUR CODE HERE -->
+
+    <h2 style="color:green;">Payment Successful!</h2>
+    
+    <p>Payment ID: {{ payment_id }}</p>
+    <p>Order ID: {{ order_id }}</p>
+    
+    <a href="/user/products">Continue Shopping</a>
+</div>
+{% endblock %}

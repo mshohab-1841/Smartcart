@@ -1,0 +1,73 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Profile — SmartCart{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm p-4" style="border-radius:16px;">
+
+                <!-- Header -->
+                <h2 class="fw-bold mb-4 text-center" style="color:#1a1a2e;">👤 Admin Profile</h2>
+
+                <!-- Profile Image -->
+                <div class="text-center mb-4">
+                    {% if admin.profile_image %}
+                    <img src="/static/uploads/admin_profiles/{{ admin.profile_image }}" width="120" height="120"
+                        style="border-radius:50%; object-fit:cover; border:4px solid #1a1a2e;">
+                    {% else %}
+                    <div style="width:120px; height:120px; border-radius:50%;
+                                    background-color:#e8eaf6; display:flex; align-items:center;
+                                    justify-content:center; margin:auto; font-size:48px;">
+                        👤
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Form -->
+                <form method="POST" action="/admin/profile" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color:#444;">Name</label>
+                        <input type="text" name="name" value="{{ admin.name }}" class="form-control"
+                            style="border-radius:8px;" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color:#444;">Email</label>
+                        <input type="email" name="email" value="{{ admin.email }}" class="form-control"
+                            style="border-radius:8px;" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color:#444;">New Password <span
+                                class="text-muted fw-normal">(optional)</span></label>
+                        <input type="password" name="password" class="form-control" style="border-radius:8px;"
+                            placeholder="Leave blank to keep current password">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" style="color:#444;">Profile Image <span
+                                class="text-muted fw-normal">(optional)</span></label>
+                        <input type="file" name="profile_image" accept="image/*" class="form-control"
+                            style="border-radius:8px;">
+                    </div>
+
+                    <button type="submit" class="w-100 py-2 fw-semibold text-white border-0" style="background-color:#1a1a2e; border-radius:8px; font-size:15px;
+                                   transition:background-color 0.2s; cursor:pointer;"
+                        onmouseover="this.style.backgroundColor='#e94560'"
+                        onmouseout="this.style.backgroundColor='#1a1a2e'">
+                        Update Profile
+                    </button>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

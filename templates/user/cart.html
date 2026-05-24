@@ -1,0 +1,153 @@
+{% extends "user/base.html" %}
+
+{% block title %}Your Cart — SmartCart{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <h2 class="fw-bold mb-4" style="color:#1a1a2e;">🛒 Your Cart</h2>
+
+    {% if not cart %}
+    <!-- Empty Cart -->
+    <div class="text-center py-5">
+        <div style="font-size:64px;">🛒</div>
+        <h4 class="mt-3 text-muted">Your cart is empty!</h4>
+        <a href="/user/products" class="btn mt-3 text-white px-4 py-2 fw-semibold"
+           style="background-color:#1a1a2e; border-radius:8px;">
+            Shop Now
+        </a>
+    </div>
+
+    {% else %}
+
+    <form method="POST" action="/user/pay">
+
+        <!-- Cart Table -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius:12px; overflow:hidden;">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color:#1a1a2e; color:white;">
+                    <tr>
+                        <th class="py-3 px-3">Select</th>
+                        <th class="py-3 px-3">Image</th>
+                        <th class="py-3 px-3">Name</th>
+                        <th class="py-3 px-3">Price</th>
+                        <th class="py-3 px-3">Quantity</th>
+                        <th class="py-3 px-3">Total</th>
+                        <th class="py-3 px-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set ns = namespace(total=0) %}
+                    {% for pid, item in cart.items() %}
+                    <tr>
+
+                        <!-- Checkbox -->
+                        <td class="px-3">
+                            <input type="checkbox" name="selected_items" value="{{ pid }}"
+                                   class="item-checkbox" data-total="{{ item.price * item.quantity }}"
+                                   style="width:18px; height:18px; accent-color:#1a1a2e; cursor:pointer;">
+                        </td>
+
+                        <!-- Image -->
+                        <td class="px-3">
+                            <img src="/static/uploads/product_images/{{ item.image }}"
+                                 width="70" height="70"
+                                 style="object-fit:contain; border-radius:8px; border:1px solid #eee;">
+                        </td>
+
+                        <!-- Name -->
+                        <td class="px-3 fw-semibold">{{ item.name }}</td>
+
+                        <!-- Price -->
+                        <td class="px-3">₹{{ item.price }}</td>
+
+                        <!-- Quantity Controls -->
+                        <td class="px-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="/user/cart/decrease/{{ pid }}"
+                                   class="btn btn-sm fw-bold"
+                                   style="background-color:#e8eaf6; color:#1a1a2e;
+                                          border-radius:6px; width:30px; height:30px;
+                                          display:flex; align-items:center; justify-content:center;
+                                          text-decoration:none;">−</a>
+
+                                <span class="fw-bold">{{ item.quantity }}</span>
+
+                                <a href="/user/cart/increase/{{ pid }}"
+                                   class="btn btn-sm fw-bold"
+                                   style="background-color:#e8eaf6; color:#1a1a2e;
+                                          border-radius:6px; width:30px; height:30px;
+                                          display:flex; align-items:center; justify-content:center;
+                                          text-decoration:none;">+</a>
+                            </div>
+                        </td>
+
+                        <!-- Total -->
+                        <td class="px-3 fw-bold" style="color:#e94560;">
+                            ₹{{ item.price * item.quantity }}
+                        </td>
+
+                        <!-- Remove -->
+                        <td class="px-3">
+                            <a href="/user/cart/remove/{{ pid }}"
+                               class="btn btn-sm px-3"
+                               style="background-color:#fdecea; color:#c0392b;
+                                      border-radius:6px; font-size:13px; text-decoration:none;">
+                                🗑 Remove
+                            </a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Summary & Actions -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-3">
+
+            <a href="/user/products"
+               class="btn px-4 py-2 fw-semibold"
+               style="background-color:#e8eaf6; color:#1a1a2e; border-radius:8px; text-decoration:none;">
+                ← Continue Shopping
+            </a>
+
+            <div class="d-flex align-items-center gap-4">
+                <h4 class="mb-0 fw-bold" style="color:#1a1a2e;">
+                    Selected Total: ₹<span id="selected_total">0</span>
+                </h4>
+                <button type="submit" class="btn px-4 py-2 fw-semibold text-white"
+                        style="background-color:#e94560; border-radius:8px; border:none; font-size:15px;">
+                    Proceed to Pay →
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+    {% endif %}
+
+</div>
+
+{% block extra_js %}
+<script>
+    let checkboxes = document.querySelectorAll(".item-checkbox");
+    let totalBox = document.getElementById("selected_total");
+
+    function updateTotal() {
+        let total = 0;
+        checkboxes.forEach((checkbox) => {
+            if (checkbox.checked) {
+                total += parseInt(checkbox.dataset.total);
+            }
+        });
+        totalBox.innerText = total;
+    }
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", updateTotal);
+    });
+</script>
+{% endblock %}
+
+{% endblock %}
